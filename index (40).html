@@ -1,0 +1,3266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rijan Moktan — Video Editor & Content Producer</title>
+  <meta name="description" content="Portfolio of Rijan Moktan, a Kathmandu-based video editor and content producer specialising in documentaries, motion graphics, and educational content." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400;1,600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── DESIGN TOKENS (from Margot Priolet Design System) ─── */
+    :root {
+      --color-cream:      #F5F0E8;
+      --color-red:        #E8200A;
+      --color-red-dark:   #C41A08;
+      --color-ink:        #1A1A1A;
+      --color-ink-muted:  #6B6B6B;
+      --color-white:      #FFFFFF;
+      --color-border:     #E0D9CE;
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+      --font-accent:  'Cormorant Garamond', Georgia, serif;
+
+      --text-display-xl: clamp(3rem, 8vw, 7rem);
+      --text-display-lg: clamp(2rem, 4vw, 3.5rem);
+      --text-display-md: 1.75rem;
+      --text-body-lg:    1rem;
+      --text-body-sm:    0.8125rem;
+      --text-label:      0.6875rem;
+      --text-nav:        0.875rem;
+
+      --space-1:  8px;
+      --space-2:  16px;
+      --space-3:  24px;
+      --space-4:  32px;
+      --space-6:  48px;
+      --space-8:  64px;
+      --space-12: 96px;
+      --space-16: 128px;
+
+      --max-width: 1200px;
+      --gutter: clamp(24px, 5vw, 72px);
+      --noise-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    }
+
+    /* ─── SCROLL PROGRESS BAR ─── */
+    #scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--color-red);
+      z-index: 99999;
+      transform-origin: left center;
+      transition: width 0.05s linear;
+      pointer-events: none;
+    }
+
+    /* ─── SKIP LINK (accessibility) ─── */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: var(--gutter);
+      background: var(--color-ink);
+      color: var(--color-white);
+      padding: 8px 16px;
+      font-size: var(--text-body-sm);
+      font-weight: 600;
+      z-index: 9999;
+      transition: top 0.1s;
+    }
+    .skip-link:focus { top: 8px; }
+
+    /* ─── FOCUS STATES (keyboard navigation) ─── */
+    :focus-visible {
+      outline: 2px solid var(--color-ink);
+      outline-offset: 3px;
+    }
+    /* High-contrast ring on red backgrounds */
+    footer :focus-visible,
+    .ann-bar :focus-visible,
+    .cta-band :focus-visible,
+    .nav-cta:focus-visible {
+      outline-color: var(--color-white);
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--color-cream);
+      color: var(--color-ink);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; }
+    iframe { border: none; display: block; }
+
+    /* ─── LAYOUT ─── */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--gutter);
+    }
+
+    /* ─── ANNOUNCEMENT BAR ─── */
+    .ann-bar {
+      background: var(--color-red);
+      color: var(--color-white);
+      text-align: center;
+      padding: 7px var(--space-6);
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ann-bar a { color: white; border-bottom: 1px solid rgba(255,255,255,0.5); }
+    .ann-bar .ann-close {
+      position: absolute;
+      right: var(--space-3);
+      background: none;
+      border: none;
+      color: white;
+      font-size: 14px;
+      opacity: 0.6;
+      line-height: 1;
+      padding: 4px;
+    }
+    .ann-bar .ann-close:hover { opacity: 1; }
+
+    /* ─── NAVIGATION ─── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--color-cream);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      padding-right: 4px;
+    }
+    .nav-wordmark {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-red);
+    }
+    .nav-links {
+      display: flex;
+      gap: var(--space-6);
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: var(--text-nav);
+      font-weight: 500;
+      color: var(--color-ink);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--color-ink);
+      transition: width 0.2s ease;
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: var(--color-red);
+      color: var(--color-white);
+      font-family: var(--font-body);
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 0;
+      transition: background 0.15s;
+    }
+    .nav-cta:hover { background: var(--color-red-dark); }
+    .nav-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--color-ink);
+      transition: 0.2s;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: var(--color-cream);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-16) var(--gutter) var(--space-12);
+      position: relative;
+      overflow: hidden;
+    }
+    /* The red circle — brand anchor adapted: a play button sun */
+    .hero-circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(260px, 38vw, 520px);
+      height: clamp(260px, 38vw, 520px);
+      background: var(--color-red);
+      border-radius: 50%;
+      z-index: 0;
+    }
+    .hero-eyebrow {
+      position: relative;
+      z-index: 1;
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin-top: var(--space-4);
+      margin-bottom: 0;
+      animation: fadeUp 0.6s 0.15s ease both;
+    }
+    .hero-heading {
+      position: relative;
+      z-index: 1;
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 10vw, 9rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      white-space: nowrap;
+      /* animation handled by GSAP letter stagger */
+      color: var(--color-ink);
+      perspective: 800px; /* needed for rotationX to feel 3D */
+    }
+    .hero-heading .line-mid { display: block; }
+    .hero-sub {
+      position: relative;
+      z-index: 1;
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      color: var(--color-ink-muted);
+      margin-top: var(--space-4);
+      animation: fadeUp 0.6s 0.15s ease both;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: var(--space-6);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--text-label);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 40px;
+      background: var(--color-border);
+      animation: scrollLine 1.5s ease infinite;
+    }
+    /* Client strip */
+    .hero-clients {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+      margin-top: var(--space-8);
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.6s 0.25s ease both;
+    }
+    .hero-client-item {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      opacity: 0.6;
+    }
+    .hero-client-item.bold {
+      font-size: 0.8rem;
+      font-weight: 700;
+      opacity: 0.5;
+      letter-spacing: 0.1em;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scrollLine {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(0.5); opacity: 0.3; }
+    }
+
+    /* ─── SECTION SHELL ─── */
+    section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-16) 0;
+    }
+    section > .container { width: 100%; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .section-header-left { display: flex; flex-direction: column; gap: 4px; }
+    .section-eyebrow {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-red);
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: var(--text-display-md);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .section-link {
+      font-size: var(--text-body-sm);
+      color: var(--color-ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: gap 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .section-link:hover { gap: 8px; color: var(--color-ink); }
+
+    /* ─── WORK GRID ─── */
+    .work-categories { display: flex; flex-direction: column; gap: var(--space-8); }
+
+    .work-category-label {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin-bottom: var(--space-3);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    .work-grid.cols-1 { grid-template-columns: 1fr; max-width: 560px; }
+
+    .work-card-thumb {
+      aspect-ratio: 16/10;
+      background: #2a2a2a;
+      position: relative;
+      overflow: hidden;
+    }
+    .work-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      position: absolute;
+      inset: 0;
+    }
+    /* Clickable overlay to open lightbox */
+    .work-card-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0);
+      transition: background 0.25s;
+    }
+    .work-card:hover .work-card-overlay { background: rgba(0,0,0,0.3); }
+    .play-btn {
+      width: 52px;
+      height: 52px;
+      background: var(--color-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .play-btn svg { width: 18px; height: 18px; fill: white; margin-left: 3px; }
+    .work-card:hover .play-btn { opacity: 1; transform: scale(1); }
+
+    .work-card-body { padding: var(--space-2) 0 0; }
+    .work-card-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .work-card-desc {
+      font-size: var(--text-body-sm);
+      color: var(--color-ink-muted);
+      line-height: 1.5;
+      margin-bottom: var(--space-1);
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      font-size: var(--text-label);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 3px 8px;
+      background: var(--color-cream);
+      border: 1px solid var(--color-border);
+      color: var(--color-ink-muted);
+    }
+
+    /* E-learning link card */
+    .link-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--color-border);
+      transition: border-color 0.15s;
+    }
+    .link-card:hover { border-color: var(--color-ink); }
+    .link-card-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--color-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .link-card-icon svg { width: 20px; height: 20px; fill: white; }
+    .link-card-body { flex: 1; }
+    .link-card-title {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .link-card-sub { font-size: var(--text-body-sm); color: var(--color-ink-muted); }
+    .link-card-arrow { color: var(--color-ink-muted); font-size: 1.1rem; transition: transform 0.15s; }
+    .link-card:hover .link-card-arrow { transform: translateX(4px); }
+
+    /* ─── VIDEO LIGHTBOX ─── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+    }
+    .lightbox.open { display: flex; }
+    .lightbox-inner {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: -44px;
+      right: 0;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      opacity: 0.7;
+      line-height: 1;
+      padding: 4px 8px;
+    }
+    .lightbox-close:hover { opacity: 1; }
+    .lightbox-video {
+      aspect-ratio: 16/9;
+      width: 100%;
+      background: black;
+    }
+    .lightbox-video iframe {
+      width: 100%;
+      height: 100%;
+    }
+    .lightbox-title {
+      color: white;
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      margin-top: var(--space-2);
+      opacity: 0.8;
+    }
+
+    /* ─── ABOUT — SPLIT SECTION ─── */
+    .about-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-16);
+      align-items: start;
+    }
+    .about-stats-panel {
+      border-top: 2px solid var(--color-ink);
+      padding-top: var(--space-4);
+    }
+    .about-stats-label {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin-bottom: var(--space-4);
+    }
+    .about-quote {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--color-ink);
+      margin-bottom: var(--space-4);
+    }
+    .about-body {
+      font-size: var(--text-body-lg);
+      color: var(--color-ink-muted);
+      line-height: 1.75;
+      margin-bottom: var(--space-6);
+    }
+    .about-details {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px var(--space-4);
+      font-size: var(--text-body-sm);
+    }
+    .about-details dt {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      white-space: nowrap;
+    }
+    .about-details dd { color: var(--color-ink); }
+
+    /* Tool pills */
+    .tool-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: var(--space-4);
+    }
+    .tool-pill {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border: 1px solid var(--color-border);
+      color: var(--color-ink-muted);
+    }
+    .tool-pill.primary {
+      background: var(--color-red);
+      border-color: var(--color-red);
+      color: white;
+    }
+
+    /* Stat block */
+    .stats-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .stat-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .stat-row:first-child { border-top: 1px solid var(--color-border); }
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--color-red);
+      flex-shrink: 0;
+      min-width: 130px;
+    }
+    .stat-label {
+      font-size: var(--text-body-sm);
+      font-weight: 500;
+      color: var(--color-ink-muted);
+      line-height: 1.4;
+    }
+
+    /* ─── CTA BAND ─── */
+    .cta-band {
+      background: var(--color-red);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-12) var(--gutter);
+      text-align: center;
+      color: var(--color-white);
+    }
+    .cta-eyebrow {
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: clamp(1.1rem, 2vw, 1.5rem);
+      color: rgba(255,255,255,0.65);
+      margin-bottom: var(--space-3);
+      display: block;
+    }
+    .cta-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      margin-bottom: var(--space-6);
+    }
+    .cta-actions {
+      display: flex;
+      gap: var(--space-2);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-white {
+      background: var(--color-white);
+      color: var(--color-red);
+      font-family: var(--font-body);
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 0;
+      transition: opacity 0.15s;
+    }
+    .btn-white:hover { opacity: 0.9; }
+    .btn-ghost-light {
+      background: transparent;
+      color: var(--color-white);
+      font-family: var(--font-body);
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 12px 24px;
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 0;
+      transition: background 0.15s;
+    }
+    .btn-ghost-light:hover { background: rgba(255,255,255,0.1); }
+
+    /* ─── EXPERIENCE ─── */
+    .experience-list { display: flex; flex-direction: column; }
+    .exp-item {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: var(--space-8);
+      padding: var(--space-8) 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .exp-meta {}
+    .exp-period {
+      font-size: var(--text-body-sm);
+      color: var(--color-ink-muted);
+      margin-bottom: var(--space-2);
+    }
+    .exp-metric {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3vw, 3rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-top: var(--space-2);
+      color: var(--color-ink);
+    }
+    .exp-metric-label {
+      font-size: var(--text-label);
+      color: var(--color-ink-muted);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .exp-role {
+      font-family: var(--font-display);
+      font-size: clamp(1.25rem, 2vw, 1.75rem);
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.1;
+    }
+    .exp-company {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-red);
+      margin-bottom: var(--space-3);
+    }
+    .exp-desc {
+      font-size: var(--text-body-sm);
+      color: var(--color-ink-muted);
+      line-height: 1.8;
+      max-width: 55ch;
+    }
+
+    /* ─── CONTACT ─── */
+    .contact-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: start;
+    }
+    .contact-heading {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 5vw, 5rem);
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--space-4);
+    }
+    .contact-body {
+      font-size: var(--text-body-sm);
+      color: var(--color-ink-muted);
+      line-height: 1.75;
+      margin-bottom: var(--space-6);
+    }
+    .contact-detail {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .contact-row { border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3); }
+    .contact-row-label {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin-bottom: 4px;
+    }
+    .contact-row-value {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .contact-row-value a:hover { opacity: 0.7; }
+
+    /* Status indicator */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin-bottom: var(--space-4);
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Form side */
+    .contact-form { display: flex; flex-direction: column; gap: var(--space-3); }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+    }
+    .form-input, .form-textarea {
+      font-family: var(--font-body);
+      font-size: var(--text-body-sm);
+      color: var(--color-ink);
+      background: var(--color-cream);
+      border: 1px solid var(--color-border);
+      border-radius: 0;
+      padding: 12px var(--space-2);
+      width: 100%;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--color-ink); }
+    /* Keyboard-navigation focus ring — clearly visible without disturbing mouse users */
+    .form-input:focus-visible, .form-textarea:focus-visible {
+      outline: 2px solid var(--color-ink);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba(26,26,26,0.08);
+    }
+    /* Error state — red border once the user has interacted with a required field */
+    .form-input:user-invalid,
+    .form-textarea:user-invalid {
+      border-color: var(--color-red);
+      background: rgba(232,32,10,0.03);
+    }
+    .form-textarea { resize: vertical; min-height: 120px; }
+    .btn-primary {
+      background: var(--color-red);
+      color: var(--color-white);
+      font-family: var(--font-body);
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 0;
+      align-self: flex-start;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: var(--color-red-dark); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--color-red);
+      color: var(--color-white);
+      padding: var(--space-8) var(--gutter) var(--space-4);
+    }
+    .footer-inner { max-width: var(--max-width); margin: 0 auto; }
+    .footer-wordmark {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: var(--space-6);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .footer-col-label {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin-bottom: var(--space-2);
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-links a {
+      font-size: var(--text-body-sm);
+      color: rgba(255,255,255,0.7);
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: white; }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-copy { font-size: var(--text-label); opacity: 0.7; }
+    .footer-location { font-size: var(--text-label); opacity: 0.7; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .work-grid { grid-template-columns: repeat(2, 1fr); }
+      .exp-item { grid-template-columns: 160px 1fr; gap: var(--space-6); }
+      .about-split { gap: var(--space-8); }
+    }
+    @media (max-width: 768px) {
+      section { padding: var(--space-12) 0; min-height: auto; }
+      .nav-links, .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+      .hero { min-height: 90vh; padding-top: var(--space-12); }
+      .work-grid { grid-template-columns: 1fr; }
+      .about-split, .contact-split { grid-template-columns: 1fr; }
+      .exp-item { grid-template-columns: 1fr; gap: var(--space-2); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .hero-clients { gap: var(--space-4); }
+      /* Class-based mobile nav open state */
+      .nav-links.is-open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: var(--color-cream);
+        border-bottom: 1px solid var(--color-border);
+        padding: var(--space-3) var(--gutter);
+        gap: var(--space-3);
+        z-index: 99;
+      }
+      .nav-cta.is-open {
+        display: block;
+        position: absolute;
+        top: calc(60px + /* nav-links approx height */ 180px);
+        left: var(--gutter);
+        z-index: 99;
+      }
+    }
+    @media (max-width: 500px) {
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+    /* ─── PAPER TEXTURE ─── */
+    /* Static SVG noise replaced by animated canvas #film-grain */
+    /* Slightly stronger grain on the dark-bg sections (footer, cta-band) */
+    footer::before,
+    .cta-band::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.045;
+      background-image: var(--noise-svg);
+      background-repeat: repeat;
+      background-size: 200px 200px;
+    }
+    footer, .cta-band { position: relative; }
+
+    /* ─── HORIZONTAL SCROLL SECTION ─── */
+    .horizontal-section {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background-color: var(--color-ink);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-8) 0 var(--space-6);
+    }
+    .horizontal-header {
+      padding: 0 5%;
+      margin-bottom: var(--space-6);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .horiz-eyebrow {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-red);
+    }
+    .horiz-title {
+      font-family: var(--font-display);
+      font-size: var(--text-display-md);
+      font-weight: 700;
+      color: var(--color-cream);
+      line-height: 1.1;
+    }
+    .horizontal-track {
+      display: flex;
+      gap: 2rem;
+      padding: 0 5%;
+      width: max-content;
+      will-change: transform;
+      cursor: grab;
+    }
+    .horizontal-track:active { cursor: grabbing; }
+    .horizontal-card {
+      width: 420px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      cursor: pointer;
+    }
+    .horizontal-card-img {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #111;
+    }
+    .horizontal-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .horizontal-card:hover .horizontal-card-img img { transform: scale(1.04); }
+    .horiz-play {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0);
+      transition: background 0.25s;
+    }
+    .horizontal-card:hover .horiz-play { background: rgba(0,0,0,0.35); }
+    .horiz-play svg {
+      width: 52px;
+      height: 52px;
+      background: var(--color-red);
+      border-radius: 50%;
+      fill: white;
+      padding: 14px 14px 14px 17px;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .horizontal-card:hover .horiz-play svg { opacity: 1; transform: scale(1); }
+    .card-info { padding: 0 2px; }
+    .card-info-meta {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin-bottom: 6px;
+    }
+    .card-info h3 {
+      color: var(--color-cream);
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.2;
+    }
+    /* End-card CTA */
+    .horiz-end-card {
+      width: 280px;
+      cursor: default;
+    }
+    .horiz-end-inner {
+      aspect-ratio: 16 / 9;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: var(--space-3);
+      border-left: 1px solid rgba(255,255,255,0.12);
+      padding-left: var(--space-6);
+    }
+    .horiz-end-label {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+    .horiz-end-link {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-cream);
+      border-bottom: 1px solid var(--color-red);
+      padding-bottom: 4px;
+      transition: color 0.15s;
+    }
+    .horiz-end-link:hover { color: var(--color-red); }
+    /* Progress bar */
+    .horiz-progress-track {
+      position: absolute;
+      bottom: var(--space-4);
+      left: 5%;
+      right: 5%;
+      height: 1px;
+      background: rgba(255,255,255,0.12);
+    }
+    .horiz-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--color-red);
+      transition: width 0.05s linear;
+    }
+    /* Mobile: show highlights as a vertical card stack — no horizontal scroll needed */
+    @media (max-width: 768px) {
+      .horizontal-section {
+        height: auto;
+        padding: var(--space-8) 0 var(--space-6);
+      }
+      .horizontal-track {
+        flex-direction: column;
+        width: 100%;
+        padding: 0 var(--gutter);
+        cursor: default;
+        transform: none !important;
+      }
+      .horizontal-card {
+        width: 100%;
+      }
+      .horiz-end-card {
+        width: 100%;
+      }
+      .horiz-end-inner {
+        aspect-ratio: auto;
+        padding: var(--space-4) 0 0;
+        border-left: none;
+        border-top: 1px solid rgba(255,255,255,0.12);
+      }
+      .horiz-progress-track { display: none; }
+    }
+
+    .link-card-caption {
+      padding: var(--space-2) 0 0;
+    }
+    .flex-col-center {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .exp-metric-foundation {
+      font-size: 1rem;
+      font-family: var(--font-body);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+    }
+
+    /* ─── PAGE TRANSITION: HERO → CONTENT ─── */
+    /* An ink panel wipes down over the hero then lifts to reveal the next section */
+    #page-transition {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    #page-transition-panel {
+      position: absolute;
+      inset: 0;
+      background: var(--color-ink);
+      transform: translateY(-101%);
+      will-change: transform;
+    }
+    /* Active: panel sweeps down */
+    #page-transition.is-entering #page-transition-panel {
+      animation: ptEnter 0.55s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+    }
+    /* Leaving: panel sweeps up to reveal destination */
+    #page-transition.is-leaving #page-transition-panel {
+      animation: ptLeave 0.55s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+    }
+    @keyframes ptEnter {
+      from { transform: translateY(-101%); }
+      to   { transform: translateY(0%); }
+    }
+    @keyframes ptLeave {
+      from { transform: translateY(0%); }
+      to   { transform: translateY(101%); }
+    }
+
+    /* ─── HERO SCROLL CTA REMOVED ─── */
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+
+    /* ─── CASE STUDY PATHWAY ─── */
+    .case-study-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-red);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: opacity 0.15s;
+    }
+    .case-study-link:hover { opacity: 0.7; }
+
+    .case-study-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1001;
+      background: rgba(0,0,0,0.85);
+      align-items: flex-start;
+      justify-content: center;
+      padding: var(--space-8) var(--space-4);
+      overflow-y: auto;
+    }
+    .case-study-modal.open { display: flex; }
+    .case-study-modal-inner {
+      background: var(--color-cream);
+      max-width: 680px;
+      width: 100%;
+      padding: var(--space-8);
+      position: relative;
+      margin: auto;
+    }
+    .case-study-close {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--color-ink-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      line-height: 1;
+    }
+    .case-study-close:hover { color: var(--color-ink); }
+    .cs-eyebrow {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-red);
+      margin-bottom: var(--space-2);
+    }
+    .cs-title {
+      font-family: var(--font-display);
+      font-size: var(--text-display-md);
+      font-weight: 700;
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .cs-section { margin-bottom: var(--space-6); }
+    .cs-section-label {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      margin-bottom: var(--space-2);
+    }
+    .cs-body {
+      font-size: var(--text-body-sm);
+      color: var(--color-ink);
+      line-height: 1.75;
+    }
+    .cs-step { margin-bottom: var(--space-3); }
+    .cs-step-label {
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-ink);
+      margin-bottom: 4px;
+    }
+    .cs-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: var(--space-2);
+    }
+    .cs-tag {
+      font-size: var(--text-label);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border: 1px solid var(--color-border);
+      color: var(--color-ink-muted);
+    }
+    .cs-watch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--color-red);
+      color: var(--color-white);
+      font-family: var(--font-body);
+      font-size: var(--text-label);
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 11px 22px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: var(--space-4);
+    }
+    .cs-watch-btn:hover { background: var(--color-red-dark); }
+
+    /* ─── FORM TOAST ─── */
+    .form-toast {
+      position: fixed;
+      bottom: var(--space-4);
+      right: var(--space-4);
+      background: var(--color-ink);
+      color: var(--color-white);
+      font-size: var(--text-body-sm);
+      font-weight: 500;
+      padding: 12px 20px;
+      z-index: 500;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+    }
+    .form-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* ─── HERO CIRCLE WRAPPER (GSAP parallax layer) ─── */
+    /* GSAP owns yPercent on this; RAF owns transform on #heroCircle inside it */
+    .hero-circle-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      /* No own dimensions — sized by the circle inside */
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Override circle positioning: it now centres relative to the wrapper */
+    #heroCircle {
+      position: relative;
+      top: auto;
+      left: auto;
+      transform: translate(-50%, -50%);
+    }
+
+
+
+    /* Individual letter spans for repulsion */
+    .hero-letter {
+      display: inline-block;
+      will-change: transform;
+      transition: transform 0s; /* JS handles easing */
+    }
+    /* Space between words */
+    .hero-letter.space {
+      width: 0.28em;
+    }
+    /* ─── WORK CARD HOVER LIFT ─── */
+    .work-card {
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .work-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    }
+
+    /* ─── SECTION WIPE REMOVED ─── */
+
+    /* ─── SCROLL VELOCITY SKEW TARGET ─── */
+    /* Applied to section headings via JS — no layout disruption */
+    .skew-target {
+      display: inline-block;
+      will-change: transform;
+    }
+    /* ─── CUSTOM CURSOR REMOVED ─── */
+
+    /* ─── CINEMATIC PRELOADER ─── */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      background: var(--color-red);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: all;
+      overflow: hidden;
+    }
+    /* Center block: wordmark + tagline */
+    .pre-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    /* Individual character spans for stagger */
+    .pre-char {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(40px) rotateX(-60deg);
+      transform-origin: 50% 100%;
+    }
+    .pre-wordmark {
+      font-family: var(--font-body);
+      font-size: clamp(1.2rem, 3.5vw, 2.2rem);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.95);
+      opacity: 0;
+      line-height: 1;
+    }
+    .pre-tagline {
+      display: flex;
+      gap: 0;
+      overflow: hidden;
+      height: 1.4em;
+    }
+    .pre-tag-char {
+      display: inline-block;
+      font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      font-family: var(--font-body);
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    /* Counter — small, bottom-anchored */
+    .pre-counter-row {
+      position: absolute;
+      bottom: clamp(28px, 5vh, 56px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+    }
+    .pre-count {
+      font-family: 'DM Mono', 'Courier New', monospace;
+      font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+      font-weight: 500;
+      color: rgba(255,255,255,0.75);
+      line-height: 1;
+      letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums;
+      min-width: 3ch;
+      text-align: right;
+      display: block;
+    }
+    .pre-pct {
+      font-family: 'DM Mono', 'Courier New', monospace;
+      font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+      font-weight: 500;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.04em;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    /* Fade-out transition for preloader */
+    #preloader.fade-out {
+      opacity: 0;
+      transition: opacity 0.75s ease;
+    }
+    /* Exit curtain — kept but hidden (JS still references it) */
+    .pre-curtain {
+      display: none;
+    }
+    /* Bar hidden — removed */
+    .pre-bar-track {
+      display: none;
+    }
+
+    /* cursor styles above ↑ */
+
+    /* ─── MAGNETIC CTA REMOVED ─── */
+
+    /* ─── ANIMATED FILM GRAIN ─── */
+    /* Replaces the static body::before with a JS-jittered canvas */
+    #film-grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.045;
+      mix-blend-mode: multiply;
+    }
+
+    /* ─── CLIP-PATH REVEAL for section headings ─── */
+    /* Headings start clipped to bottom-zero and reveal upward */
+    .reveal-wrap {
+      overflow: hidden;
+      display: block;
+    }
+    .reveal-inner {
+      display: block;
+      clip-path: inset(100% 0% 0% 0%);
+      /* GSAP drives clip-path to inset(0% 0% 0% 0%) on scroll */
+    }
+    /* ─── SCROLL-FILL TEXT ─── */
+    /* Words start as ghost outlines, fill to solid as user scrolls */
+    .fill-text {
+      /* each word gets a split wrapper — JS handles the actual splitting */
+      position: relative;
+    }
+    /* The "ghost" layer — always visible, low opacity */
+    .fill-text-ghost {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(26,26,26,0.18);
+      position: relative;
+    }
+    /* The "filled" layer — clipped to reveal from bottom via JS */
+    .fill-text-fill {
+      position: absolute;
+      inset: 0;
+      color: var(--color-ink);
+      /* clip is set per-word via GSAP scrub on clipPath */
+      clip-path: inset(100% 0 0 0);
+      pointer-events: none;
+    }
+
+    /* ─── MASKED LINE REVEAL (non-section-title headings) ─── */
+    .masked-line-reveal .line-wrap {
+      overflow: hidden;
+      display: block;
+    }
+    .masked-line-reveal .line-inner {
+      display: block;
+      transform: translateY(110%);
+      /* GSAP drives to translateY(0) on scroll */
+    }
+
+    /* ─── PARALLAX THUMBNAIL WRAPPERS ─── */
+    /* clip the thumb so the inner img can move without overflow */
+    .horizontal-card-img,
+    .work-card-thumb {
+      overflow: hidden;
+    }
+    /* the img itself is the parallax target — JS adds will-change */
+    .horizontal-card-img img,
+    .work-card-thumb img {
+      will-change: transform;
+    }
+
+    /* ─── SPLITTYPE LAYOUT FIX ─── */
+    .word, .char {
+      display: inline-block;
+      overflow: hidden;
+    }
+
+    /* ─── PINNED ABOUT SECTION ─── */
+    .about-pinned-section {
+      min-height: auto;
+      padding: 0;
+      display: block;
+    }
+    .about-pinned-outer {
+      display: flex;
+      align-items: flex-start;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--gutter);
+    }
+    /* LEFT: sticky panel */
+    .about-pin-col {
+      position: sticky;
+      top: 80px; /* clears the nav */
+      width: 320px;
+      flex-shrink: 0;
+      padding: var(--space-16) 0 var(--space-16);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      align-self: flex-start;
+    }
+    .about-pin-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-top: 6px;
+    }
+    .about-pin-sub {
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      color: var(--color-ink-muted);
+      line-height: 1.4;
+    }
+    .about-pin-line {
+      width: 40px;
+      height: 2px;
+      background: var(--color-red);
+      margin: var(--space-2) 0;
+    }
+    /* RIGHT: scrolling content */
+    .about-scroll-col {
+      flex: 1;
+      padding: var(--space-16) 0 var(--space-16) var(--space-12);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-12);
+      border-left: 1px solid var(--color-border);
+      margin-left: var(--space-8);
+    }
+    .about-scroll-block {
+      /* each block fades in as it enters the viewport */
+    }
+
+    /* Mobile: unpin and stack */
+    @media (max-width: 768px) {
+      .about-pinned-outer {
+        flex-direction: column;
+        padding-top: var(--space-12);
+        padding-bottom: var(--space-8);
+      }
+      .about-pin-col {
+        position: static;
+        width: 100%;
+        padding: 0 0 var(--space-6);
+      }
+      .about-scroll-col {
+        margin-left: 0;
+        padding: var(--space-6) 0 0;
+        border-left: none;
+        border-top: 1px solid var(--color-border);
+        gap: var(--space-8);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── CINEMATIC PRELOADER ─── -->
+<div id="preloader" aria-hidden="true">
+  <div class="pre-center">
+    <div class="pre-wordmark" id="preWordmark">Rijan Moktan</div>
+    <div class="pre-tagline" id="preTagline"></div>
+  </div>
+  <div class="pre-counter-row">
+    <span class="pre-count" id="preCount">0</span>
+    <span class="pre-pct" id="prePct">%</span>
+  </div>
+  <div class="pre-bar-track"><div class="pre-bar-fill" id="preBar"></div></div>
+  <div class="pre-circle" id="preCircle"></div>
+  <div class="pre-curtain" id="preCurtain"></div>
+</div>
+
+<!-- ─── SCROLL PROGRESS BAR ─── -->
+<div id="scroll-progress" aria-hidden="true"></div>
+
+<!-- custom cursor removed -->
+
+<!-- ─── ANIMATED FILM GRAIN CANVAS ─── -->
+<canvas id="film-grain" aria-hidden="true"></canvas>
+
+<!-- ─── PAGE TRANSITION PANEL ─── -->
+<div id="page-transition" aria-hidden="true"><div id="page-transition-panel"></div></div>
+
+<!-- Skip to main content for keyboard/screen-reader users -->
+<a href="#about" class="skip-link">Skip to content</a>
+
+<!-- ─── ANNOUNCEMENT BAR ─── -->
+<div class="ann-bar" id="annBar">
+  <span>Available for freelance &amp; full-time — <a href="#contact">Let's talk</a></span>
+  <button class="ann-close" id="annClose" aria-label="Dismiss announcement">✕</button>
+</div>
+
+<!-- ─── NAVIGATION ─── -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-wordmark">Rijan Moktan</a>
+    <ul class="nav-links">
+      <li><a href="#selected-works">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav-cta" id="navCta" aria-label="Get in touch">Get in Touch</button>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero" id="heroSection">
+  <div class="hero-circle-wrapper" id="heroCircleWrapper">
+    <div class="hero-circle" id="heroCircle"></div>
+  </div>
+
+  <h1 class="hero-heading" id="heroHeading">
+    <span class="line-mid" id="heroLetters"></span>
+  </h1>
+  <p class="hero-eyebrow">Video Editor · Content Producer · Filmmaker</p>
+</section>
+
+<!-- ─── HORIZONTAL SELECTED WORKS ─── -->
+<section class="horizontal-section" id="selected-works">
+  <div class="horizontal-header">
+    <span class="horiz-eyebrow">01 — Selected Works</span>
+    <h2 class="horiz-title masked-line-reveal">Highlights Reel</h2>
+  </div>
+  <div class="horizontal-track">
+
+    <div class="horizontal-card" data-lightbox-src="https://www.youtube.com/embed/MISBvlls7kY?autoplay=1" data-lightbox-title="Lichhavi Era" role="button" tabindex="0" aria-label="Play Lichhavi Era">
+      <div class="horizontal-card-img">
+        <img src="https://img.youtube.com/vi/MISBvlls7kY/hqdefault.jpg" alt="Lichhavi Era" loading="lazy">
+        <div class="horiz-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-info-meta">Historical Documentary · Shaasan</div>
+        <h3>Lichhavi Era</h3>
+      </div>
+    </div>
+
+    <div class="horizontal-card" data-lightbox-src="https://www.youtube.com/embed/FhvDGJJeASY?autoplay=1" data-lightbox-title="Toni Hagen" role="button" tabindex="0" aria-label="Play Toni Hagen">
+      <div class="horizontal-card-img">
+        <img src="https://img.youtube.com/vi/FhvDGJJeASY/hqdefault.jpg" alt="Toni Hagen" loading="lazy">
+        <div class="horiz-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-info-meta">Biographical Documentary · Shaasan</div>
+        <h3>Toni Hagen</h3>
+      </div>
+    </div>
+
+    <div class="horizontal-card" data-lightbox-src="https://www.youtube.com/embed/SWKTDQ4uF68?autoplay=1" data-lightbox-title="Pashupatinagar: A Hidden Gem" role="button" tabindex="0" aria-label="Play Pashupatinagar: A Hidden Gem">
+      <div class="horizontal-card-img">
+        <img src="https://img.youtube.com/vi/SWKTDQ4uF68/hqdefault.jpg" alt="Pashupatinagar" loading="lazy">
+        <div class="horiz-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-info-meta">Short Documentary · Shaasan</div>
+        <h3>Pashupatinagar: A Hidden Gem</h3>
+      </div>
+    </div>
+
+    <div class="horizontal-card" data-lightbox-src="https://www.youtube.com/embed/ql_ntEO0OzQ?autoplay=1" data-lightbox-title="Ilia Topuria: The Rise of a Champion" role="button" tabindex="0" aria-label="Play Ilia Topuria: The Rise of a Champion">
+      <div class="horizontal-card-img">
+        <img src="https://img.youtube.com/vi/ql_ntEO0OzQ/hqdefault.jpg" alt="Ilia Topuria" loading="lazy">
+        <div class="horiz-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-info-meta">Sports Documentary · MMA Wire</div>
+        <h3>Ilia Topuria: Rise of a Champion</h3>
+      </div>
+    </div>
+
+    <div class="horizontal-card" data-lightbox-src="https://www.youtube.com/embed/PjdvXiR40rM?autoplay=1" data-lightbox-title="Cinematography & Editing Experiment" role="button" tabindex="0" aria-label="Play Cinematography & Editing Experiment">
+      <div class="horizontal-card-img">
+        <img src="https://img.youtube.com/vi/PjdvXiR40rM/hqdefault.jpg" alt="Cinematography Experiment" loading="lazy">
+        <div class="horiz-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-info-meta">Cinematography · Personal</div>
+        <h3>Cinematography &amp; Editing Experiment</h3>
+      </div>
+    </div>
+
+    <div class="horizontal-card" data-lightbox-src="https://player.vimeo.com/video/847080794?autoplay=1" data-lightbox-title="Samsung F54 – Test Footage" role="button" tabindex="0" aria-label="Play Samsung F54 – Test Footage">
+      <div class="horizontal-card-img">
+        <img src="https://vumbnail.com/847080794.jpg" alt="Samsung F54" loading="lazy">
+        <div class="horiz-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="card-info">
+        <div class="card-info-meta">Motion Graphics · Corporate</div>
+        <h3>Samsung F54 – Test Footage</h3>
+      </div>
+    </div>
+
+    <!-- Scroll hint trailing card -->
+    <div class="horizontal-card horiz-end-card">
+      <div class="horiz-end-inner">
+        <div class="horiz-end-label">See full breakdown</div>
+        <a href="https://ais-dev-fzuv7pr2eae4gxphfwje4w-887264772642.asia-east1.run.app/#about" class="horiz-end-link">About the artist ↓</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scroll progress bar -->
+  <div class="horiz-progress-track"><div class="horiz-progress-bar" id="horizBar"></div></div>
+</section>
+
+
+<!-- ─── CTA BAND ─── -->
+<section class="cta-band" aria-label="Call to action">
+  <span class="cta-eyebrow">Have something complicated to explain?</span>
+  <div class="cta-heading">Let's make people<br>actually watch it.</div>
+  <div class="cta-actions">
+    <button class="btn-white" id="ctaStartBtn">Start a Project →</button>
+    <a href="#selected-works" class="btn-ghost-light">View Work</a>
+  </div>
+</section>
+<section id="about" class="about-pinned-section">
+  <div class="about-pinned-outer">
+
+    <!-- LEFT: pinned panel -->
+    <div class="about-pin-col" id="aboutPinCol">
+      <span class="section-eyebrow">02 — About</span>
+      <h2 class="section-title about-pin-title">Who I Am</h2>
+      <p class="about-pin-sub">Video Editor &amp;<br>Content Producer</p>
+      <div class="about-pin-line"></div>
+      <dl class="about-details">
+        <dt>Based</dt>       <dd>Kathmandu, Nepal</dd>
+        <dt>Speciality</dt>  <dd>Documentary · Educational · Motion</dd>
+        <dt>Languages</dt>   <dd>Nepali, English, Hindi</dd>
+      </dl>
+    </div>
+
+    <!-- RIGHT: scrolling content -->
+    <div class="about-scroll-col">
+
+      <div class="about-scroll-block">
+        <p class="about-quote fill-text">"Complex ideas.<br>Clear stories."</p>
+        <p class="about-body">I started at Shaasan crafting videos about Nepal's history and politics — which is where my motion graphics work properly began. From there I moved into e-learning, producing 14 hours of course content for an international Internews initiative hosted on Shikshya.org.<br><br>Now I make long-form documentary content for MMA Wire, where I've helped grow a channel from 500 to 20,000 average views per video. The through-line is always the same: take something complex and make it watchable.</p>
+      </div>
+
+      <div class="about-scroll-block">
+        <div class="tool-list">
+          <span class="tool-pill primary">DaVinci Resolve</span>
+          <span class="tool-pill">Blender</span>
+          <span class="tool-pill">Affinity Designer</span>
+          <span class="tool-pill">Audacity</span>
+          <span class="tool-pill">Google AI Studio</span>
+          <span class="tool-pill">After Effects</span>
+        </div>
+      </div>
+
+      <div class="about-scroll-block about-stats-panel">
+        <div class="about-stats-label">By the numbers</div>
+        <div class="stats-grid">
+          <div class="stat-row">
+            <div class="stat-number" data-count="2000000" data-suffix="M+">2M+</div>
+            <div class="stat-label">Combined views at Shaasan</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-number" data-count="14" data-suffix="h">14h</div>
+            <div class="stat-label">E-learning course content produced</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-number" data-count="50000" data-suffix="K+">50K+</div>
+            <div class="stat-label">Views on top MMA Wire video</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── EXPERIENCE ─── -->
+<section id="experience">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-eyebrow">03 — Experience</span>
+        <span class="reveal-wrap"><h2 class="section-title skew-target reveal-inner">Where I've Worked</h2></span>
+      </div>
+    </div>
+
+    <div class="experience-list">
+
+      <div class="exp-item">
+        <div class="exp-meta">
+          <div class="exp-period">Jan 2026 — Present</div>
+          <div class="exp-metric">50K+</div>
+          <div class="exp-metric-label">Top Video</div>
+        </div>
+        <div>
+          <div class="exp-role">Content Producer</div>
+          <div class="exp-company">MMA Wire</div>
+          <div class="exp-desc">End-to-end production of documentary-style MMA content. Thumbnails, archival sourcing, YouTube SEO, script refinement. 5 long-form documentaries produced.</div>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-meta">
+          <div class="exp-period">Dec 2024 — Sep 2025</div>
+          <div class="exp-metric">14h</div>
+          <div class="exp-metric-label">Course Content</div>
+        </div>
+        <div>
+          <div class="exp-role">Video Editor</div>
+          <div class="exp-company">Youth Innovation Lab</div>
+          <div class="exp-desc">Sole editor for 2 e-learning courses — ~40 lessons, 14 hours of content. PORCH digital rights course and Understanding Disaster Risk Reduction in Nepal.</div>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-meta">
+          <div class="exp-period">Aug 2023 — Dec 2024</div>
+          <div class="exp-metric">2M+</div>
+          <div class="exp-metric-label">Combined Views</div>
+        </div>
+        <div>
+          <div class="exp-role">Production Associate</div>
+          <div class="exp-company">Shaasan</div>
+          <div class="exp-desc">Research, scripting, editing, motion graphics across 12 long-form and 20+ short-form videos on Nepal's politics, history, and economics.</div>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-meta">
+          <div class="exp-period">2022 — 2023</div>
+          <div class="exp-metric exp-metric-foundation">Foundation</div>
+        </div>
+        <div>
+          <div class="exp-role">Freelance Editor &amp; Cinematographer</div>
+          <div class="exp-company">Self-Employed</div>
+          <div class="exp-desc">Music videos, interviews, travel films, short documentaries. Full production workflow managed independently.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section id="contact">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-eyebrow">04 — Get in Touch</span>
+        <span class="reveal-wrap"><h2 class="section-title skew-target reveal-inner">Let's Work Together</h2></span>
+      </div>
+    </div>
+
+    <div class="contact-split">
+      <div>
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          Available for Freelance &amp; Full-Time
+        </div>
+        <h3 class="contact-heading">Start a<br>project.</h3>
+        <p class="contact-body">Documentary, educational content, motion graphics — if you have a story that needs to be told clearly, let's talk.</p>
+        <div class="contact-detail">
+          <div class="contact-row">
+            <div class="contact-row-label">Email</div>
+            <div class="contact-row-value"><a href="mailto:rijan.moktan56@gmail.com">rijan.moktan56@gmail.com</a></div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-row-label">Phone</div>
+            <div class="contact-row-value"><a href="tel:+9779862154685">+977 9862154685</a></div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-row-label">Based in</div>
+            <div class="contact-row-value">Kathmandu, Nepal</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <form class="contact-form" id="contactForm">
+          <div class="form-group">
+            <label class="form-label" for="name">Name</label>
+            <input class="form-input" type="text" id="name" placeholder="Your name" autocomplete="name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-input" type="email" id="email" placeholder="your@email.com" autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="project">Project Type</label>
+            <input class="form-input" type="text" id="project" placeholder="Documentary, E-Learning, Motion Graphics…" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message">Message</label>
+            <textarea class="form-textarea" id="message" placeholder="Tell me about your project…" required></textarea>
+          </div>
+          <button class="btn-primary" type="submit" id="submitBtn">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-wordmark">Rijan Moktan</div>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-col-label">Navigate</div>
+        <ul class="footer-links">
+          <li><a href="#selected-works">Work</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-label">Work With Me</div>
+        <ul class="footer-links">
+          <li><a href="mailto:rijan.moktan56@gmail.com">rijan.moktan56@gmail.com</a></li>
+          <li><a href="tel:+9779862154685">+977 9862154685</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-label">Clients</div>
+        <ul class="footer-links">
+          <li><a href="#selected-works">Shaasan</a></li>
+          <li><a href="#selected-works">MMA Wire</a></li>
+          <li><a href="#selected-works">Youth Innovation Lab</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">Rijan Moktan — 2026</div>
+      <div class="footer-location">Kathmandu, Nepal</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── FORM TOAST ─── -->
+<div class="form-toast" id="formToast">Opening your mail client…</div>
+
+<!-- ─── VIDEO LIGHTBOX ─── -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" id="lightboxClose">✕</button>
+    <div class="lightbox-video">
+      <iframe id="lightboxFrame" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+    </div>
+    <div class="lightbox-title" id="lightboxTitle"></div>
+  </div>
+</div>
+
+<!-- ─── CASE STUDY MODAL ─── -->
+<div class="case-study-modal" id="caseStudyModal" role="dialog" aria-modal="true" aria-labelledby="csTitle">
+  <div class="case-study-modal-inner">
+    <button class="case-study-close" id="caseStudyClose" aria-label="Close case study">✕</button>
+    <div class="cs-eyebrow" id="csEyebrow"></div>
+    <h2 class="cs-title" id="csTitle"></h2>
+    <div id="csBody"></div>
+  </div>
+</div>
+
+<script>
+  // ─── LIGHTBOX ───
+  function openLightbox(src, title) {
+    // Append clean-player params to YouTube embeds:
+    // rel=0 suppresses suggested videos, modestbranding=1 minimises YT logo
+    if (src.includes('youtube.com/embed')) {
+      var sep = src.includes('?') ? '&' : '?';
+      src = src + sep + 'rel=0&modestbranding=1&controls=1';
+    }
+    document.getElementById('lightboxFrame').src = src;
+    document.getElementById('lightboxTitle').textContent = title;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightboxFrame').src = '';
+    document.body.style.overflow = '';
+  }
+
+  // Wire lightbox close button and backdrop
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('caseStudyModal').classList.contains('open')) {
+      closeCaseStudy();
+    } else if (document.getElementById('lightbox').classList.contains('open')) {
+      closeLightbox();
+    }
+  });
+
+  // ─── CASE STUDY PATHWAY ───
+  var caseStudies = {
+    'toni-hagen': {
+      eyebrow: 'Biographical Documentary · Shaasan',
+      title: 'Toni Hagen',
+      src: 'https://www.youtube.com/embed/FhvDGJJeASY?autoplay=1',
+      brief: 'A deep-dive into the life of Swiss geologist Toni Hagen, who mapped Nepal on foot in the 1950s. The goal was to tell a compelling biographical story with minimal archival footage, relying instead on motion graphics and visual storytelling.',
+      workflow: [
+        { label: 'Research & Script', body: 'Archival sourcing across Swiss national archives and Nepali government records. Script structured as a three-act narrative — arrival, mapping journey, legacy. Approximately 3 hours of reference material condensed into a 12-minute documentary.' },
+        { label: 'Node-based Masking', body: 'DaVinci Resolve\'s node compositor used to rotoscope archival stills and isolate subjects, enabling kinetic camera moves over static images. Each push-in built on a motion path node with ease-in/out curves to simulate a live camera.' },
+        { label: 'Motion Graphics', body: 'Custom map animations built in Blender to trace Hagen\'s routes across Nepal\'s topography. Colour-graded to a warm, aged-documentary palette using Resolve\'s Colour Wheels and a custom LUT.' },
+        { label: 'Audio Mix', body: 'Voiceover treated in Audacity: low-cut at 80 Hz, gentle compression, light convolution reverb to place the voice in an acoustic space. Ambient bed sourced from archival field recordings and faded at scene transitions.' }
+      ],
+      tools: ['DaVinci Resolve', 'Blender', 'Audacity', 'Affinity Designer']
+    },
+    'ilia-topuria': {
+      eyebrow: 'Sports Documentary · MMA Wire',
+      title: 'Ilia Topuria: Rise of a Champion',
+      src: 'https://www.youtube.com/embed/ql_ntEO0OzQ?autoplay=1',
+      brief: 'End-to-end documentary charting Ilia Topuria\'s journey to the UFC Featherweight title. Structurally designed for YouTube long-form retention — hooked within the first 60 seconds, with curiosity sustained across 20+ minutes.',
+      workflow: [
+        { label: 'Visual Research', body: 'Curated ~4 hours of UFC fight footage, press conferences, and interviews. Fight clips timed to musical rhythm for first-impression impact, cutting hard to silence before the title card.' },
+        { label: 'Narrative Architecture', body: 'Three-part arc: underdog origins in Georgia → rise through European MMA → UFC conquest. Each section opens with a hook clip before rewinding to context — sustaining viewer curiosity without burying the story.' },
+        { label: 'Colour Matching', body: 'Mixed broadcast footage from different productions required node-based colour matching in DaVinci Resolve to unify sources. A high-contrast, desaturated LUT then applied as the final grade pass.' },
+        { label: 'Thumbnail & CTR', body: 'Two thumbnail concepts A/B tested. Final version — high-contrast close-up with bold typography — achieved a 6.8% click-through rate against a 4.1% channel baseline.' }
+      ],
+      tools: ['DaVinci Resolve', 'After Effects', 'Google AI Studio', 'Audacity']
+    }
+  };
+
+  function openCaseStudy(id) {
+    var data = caseStudies[id];
+    if (!data) return;
+
+    document.getElementById('csEyebrow').textContent = data.eyebrow;
+    document.getElementById('csTitle').textContent  = data.title;
+
+    var html = '<div class="cs-section"><div class="cs-section-label">Brief</div><div class="cs-body">' + data.brief + '</div></div>';
+    html += '<div class="cs-section"><div class="cs-section-label">Workflow Breakdown</div>';
+    data.workflow.forEach(function(step) {
+      html += '<div class="cs-step"><div class="cs-step-label">' + step.label + '</div><div class="cs-body">' + step.body + '</div></div>';
+    });
+    html += '</div>';
+    html += '<div class="cs-section"><div class="cs-section-label">Tools Used</div><div class="cs-tags">' +
+      data.tools.map(function(t) { return '<span class="cs-tag">' + t + '</span>'; }).join('') +
+      '</div></div>';
+    var escapedSrc   = data.src.replace(/'/g, "\\'");
+    var escapedTitle = data.title.replace(/'/g, "\\'");
+    html += '<button class="cs-watch-btn" onclick="closeCaseStudy(); openLightbox(\'' + escapedSrc + '\', \'' + escapedTitle + '\')">&#9654; Watch the Video</button>';
+
+    document.getElementById('csBody').innerHTML = html;
+    document.getElementById('caseStudyModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCaseStudy() {
+    document.getElementById('caseStudyModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('caseStudyClose').addEventListener('click', closeCaseStudy);
+  document.getElementById('caseStudyModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCaseStudy();
+  });
+  // Escape key handled by unified listener above
+
+  document.querySelectorAll('[data-lightbox-src]').forEach(function(card) {
+    let isDragging = false;
+    let startPos = { x: 0, y: 0 };
+
+    card.addEventListener('pointerdown', function(e) {
+      isDragging = false;
+      startPos = { x: e.clientX, y: e.clientY };
+    });
+
+    card.addEventListener('pointermove', function(e) {
+      const dx = Math.abs(e.clientX - startPos.x);
+      const dy = Math.abs(e.clientY - startPos.y);
+      if (dx > 5 || dy > 5) {
+        isDragging = true;
+      }
+    });
+
+    card.addEventListener('click', function(e) {
+      if (!isDragging) {
+        openLightbox(this.dataset.lightboxSrc, this.dataset.lightboxTitle);
+      }
+    });
+
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openLightbox(this.dataset.lightboxSrc, this.dataset.lightboxTitle);
+      }
+    });
+  });
+
+  // ─── ANNOUNCEMENT BAR CLOSE ───
+  // Wire immediately AND re-wire after preloader exits (preloader blocks pointer events)
+  function wireAnnClose() {
+    var btn = document.getElementById('annClose');
+    var bar = document.getElementById('annBar');
+    if (btn && bar) {
+      btn.addEventListener('click', function() {
+        bar.style.display = 'none';
+      }, { once: true });
+    }
+  }
+  wireAnnClose();
+  document.addEventListener('preloader-done', wireAnnClose, { once: true });
+
+  // ─── NAV CTA SCROLL ───
+  // Use lenis if available (set on window by GSAP script), else native scroll
+  document.getElementById('navCta').addEventListener('click', function() {
+    var target = document.getElementById('contact');
+    if (!target) return;
+    if (window._lenis) { window._lenis.scrollTo(target, { offset: -60, duration: 1.2 }); }
+    else { target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+
+  // ─── CONTACT FORM — fetch() submission via Formspree ───
+  // Replace YOUR_FORM_ID below with your Formspree endpoint ID.
+  // Sign up free at https://formspree.io/ and paste in the 8-char form ID.
+  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+
+  document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const toast = document.getElementById('formToast');
+
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    const data = {
+      name:    document.getElementById('name').value,
+      email:   document.getElementById('email').value,
+      project: document.getElementById('project').value,
+      message: document.getElementById('message').value,
+    };
+
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        toast.textContent = "Message sent — I'll be in touch soon!";
+        toast.classList.add('show');
+        this.reset();
+        btn.textContent = 'Sent ✓';
+        // Re-enable after 3s so user can send again
+        setTimeout(function() {
+          btn.textContent = 'Send Message';
+          btn.disabled = false;
+        }, 3000);
+      } else {
+        throw new Error('Server error');
+      }
+    } catch {
+      toast.textContent = 'Something went wrong. Please email directly.';
+      toast.classList.add('show');
+      btn.textContent = 'Send Message';
+      btn.disabled = false;
+    }
+    setTimeout(function() { toast.classList.remove('show'); }, 4000);
+  });
+
+  // ─── CTA BAND BUTTONS ───
+  document.getElementById('ctaStartBtn').addEventListener('click', function() {
+    var target = document.getElementById('contact');
+    if (!target) return;
+    if (window._lenis) { window._lenis.scrollTo(target, { offset: -60, duration: 1.2 }); }
+    else { target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+
+  // ─── HAMBURGER ───
+  document.getElementById('hamburger').addEventListener('click', function() {
+    const links = document.querySelector('.nav-links');
+    const cta   = document.querySelector('.nav-cta');
+    const isOpen = links && links.classList.contains('is-open');
+    if (links) links.classList.toggle('is-open');
+    if (cta)   cta.classList.toggle('is-open');
+    this.setAttribute('aria-expanded', String(!isOpen));
+  });
+  // Close mobile menu when a nav link is clicked
+  document.querySelectorAll('.nav-links a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      document.querySelector('.nav-links').classList.remove('is-open');
+      document.querySelector('.nav-cta').classList.remove('is-open');
+    });
+  });
+
+  // ─── ACTIVE NAV HIGHLIGHT ON SCROLL ───
+  const sections = document.querySelectorAll('section[id], div[id="contact"]');
+  const navAs    = document.querySelectorAll('.nav-links a');
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        navAs.forEach(function(a) { a.style.fontWeight = '500'; });
+        const match = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+        if (match) match.style.fontWeight = '700';
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('section[id]').forEach(function(s) { observer.observe(s); });
+</script>
+
+<!-- ─── LENIS + GSAP LIBRARIES ─── -->
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+
+<script>
+  window.addEventListener('load', function() {
+  // ─── LENIS SMOOTH SCROLL ───
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    gestureDirection: 'vertical',
+    smooth: true,
+    mouseMultiplier: 1,
+    smoothTouch: false,
+    touchMultiplier: 2,
+  });
+  window._lenis = lenis; // expose for other scripts (navCta, ctaBtn)
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // ─── GSAP + SCROLLTRIGGER ───
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+  gsap.ticker.lagSmoothing(0, 0);
+
+  // A. Parallax on hero circle wrapper — GSAP owns Y scroll; RAF owns mouse XY on inner circle
+  //    ALSO: morph border-radius as user scrolls for physical "air resistance" feel
+  gsap.to("#heroCircleWrapper", {
+    yPercent: 30,
+    ease: "none",
+    scrollTrigger: {
+      trigger: ".hero",
+      start: "top top",
+      end: "bottom top",
+      scrub: true
+    }
+  });
+
+  gsap.to("#heroCircle", {
+    borderRadius: "45% 55% 52% 48% / 48% 45% 55% 52%",
+    ease: "none",
+    scrollTrigger: {
+      trigger: ".hero",
+      start: "top top",
+      end: "bottom top",
+      scrub: true
+    }
+  });
+
+  // A2. Hero letter stagger entrance — replaces the CSS fadeUp on the heading
+  // Letters are already split into spans by the RAF script (runs before window.load via rAF double-frame)
+  // We defer this tween until the spans exist
+  function initLetterStagger() {
+    const letters = document.querySelectorAll('#heroLetters .hero-letter');
+    if (!letters.length) { setTimeout(initLetterStagger, 50); return; }
+    gsap.from(letters, {
+      y: 40,
+      opacity: 0,
+      rotationX: -55,
+      transformOrigin: "50% 100%",
+      duration: 0.9,
+      ease: "power3.out",
+      stagger: 0.04,
+      delay: 0.1
+    });
+    // Eyebrow and sub still fade up, staggered after letters
+    gsap.from(".hero-eyebrow", { y: 16, opacity: 0, duration: 0.6, ease: "power3.out", delay: 0.55 });
+  }
+  initLetterStagger();
+
+  // B. Section category labels fade up on scroll
+  gsap.utils.toArray('.work-category-label').forEach((label) => {
+    gsap.from(label, {
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: label,
+        start: "top 85%",
+        toggleActions: "play none none reverse"
+      }
+    });
+  });
+
+  // C. Work cards stagger in when their grid enters the viewport
+  gsap.utils.toArray('.work-grid').forEach((grid) => {
+    const cards = grid.querySelectorAll('.work-card, .link-card');
+    gsap.from(cards, {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out",
+      stagger: 0.15,
+      scrollTrigger: {
+        trigger: grid,
+        start: "top 85%",
+        toggleActions: "play none none reverse"
+      }
+    });
+  });
+
+  // D. Subtle parallax zoom on thumbnail images as you scroll past
+  gsap.utils.toArray('.work-card-thumb img').forEach((img) => {
+    gsap.fromTo(img,
+      { scale: 1.15, yPercent: -10 },
+      {
+        scale: 1,
+        yPercent: 10,
+        ease: "none",
+        scrollTrigger: {
+          trigger: img.parentElement,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true
+        }
+      }
+    );
+  });
+
+  // E. Experience rows slide in from the left
+  gsap.utils.toArray('.exp-item').forEach((item, i) => {
+    gsap.from(item, {
+      x: -30,
+      opacity: 0,
+      duration: 0.7,
+      ease: "power3.out",
+      delay: i * 0.05,
+      scrollTrigger: {
+        trigger: item,
+        start: "top 88%",
+        toggleActions: "play none none reverse"
+      }
+    });
+  });
+
+  // F. Stat counter animation — numbers count up on scroll entry
+  document.querySelectorAll('.stat-number[data-count]').forEach((el) => {
+    const target    = parseFloat(el.dataset.count);
+    const suffix    = el.dataset.suffix || '';
+    // Determine display scale: millions (≥1,000,000), thousands (≥1,000), or raw
+    const isMillion = target >= 1000000;
+    const isThousand = !isMillion && target >= 1000;
+    const obj = { val: 0 };
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: "top 85%",
+      once: true,
+      onEnter: () => {
+        gsap.to(obj, {
+          val: target,
+          duration: 1.6,
+          ease: "power2.out",
+          onUpdate() {
+            let display;
+            if (isMillion) {
+              display = (obj.val / 1000000).toFixed(obj.val >= 1000000 ? 0 : 1) + suffix;
+            } else if (isThousand) {
+              display = Math.round(obj.val / 1000) + suffix;
+            } else {
+              display = Math.round(obj.val) + suffix;
+            }
+            el.textContent = display;
+          }
+        });
+      }
+    });
+  });
+
+  // G. Pinned horizontal scroll gallery — scrub: 1.5 for heavy Lenis-powered drag
+  const horizontalSection = document.querySelector('.horizontal-section');
+  const horizontalTrack   = document.querySelector('.horizontal-track');
+  const horizBar          = document.getElementById('horizBar');
+
+  if (horizontalSection && horizontalTrack && window.innerWidth > 768) {
+    function getScrollAmount() {
+      return -(horizontalTrack.scrollWidth - window.innerWidth + 100);
+    }
+
+    ScrollTrigger.create({
+      trigger: horizontalSection,
+      start: "top top",
+      end: () => `+=${getScrollAmount() * -1}`,
+      pin: true,
+      scrub: 1.5,   // was 1 — now takes 1.5s to catch up, creating elastic drag
+      invalidateOnRefresh: true,
+      onUpdate: (self) => {
+        gsap.set(horizontalTrack, { x: getScrollAmount() * self.progress });
+        if (horizBar) horizBar.style.width = (self.progress * 100) + '%';
+      }
+    });
+  }
+
+  // H. Scroll-velocity skew on section titles
+  // Reads ScrollTrigger.getVelocity() each frame — clamps and applies skewY
+  const skewTargets = document.querySelectorAll('.skew-target');
+  const MAX_SKEW    = 4; // degrees cap — enough to read, not enough to feel broken
+  const SKEW_FACTOR = 0.003;
+
+  gsap.ticker.add(() => {
+    const velocity  = ScrollTrigger.getVelocity();
+    const rawSkew   = Math.max(-MAX_SKEW, Math.min(MAX_SKEW, velocity * -SKEW_FACTOR));
+    skewTargets.forEach(el => {
+      el.style.transform = `skewY(${rawSkew.toFixed(3)}deg)`;
+    });
+  });
+
+  // J. Page transition scroll CTA removed per user request
+  }); // end window.load
+</script>
+
+<!-- ─── HERO INTERACTION: LETTER REPULSION + SPRING CIRCLE ─── -->
+<script>
+(function() {
+  // ── 1. Build letter spans ──────────────────────────────────────────────
+  var container = document.getElementById('heroLetters');
+  if (!container) return;
+  var text = 'RIJAN MOKTAN';
+  container.innerHTML = '';
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    var span = document.createElement('span');
+    if (ch === ' ') {
+      span.className = 'hero-letter space';
+      span.innerHTML = '&nbsp;';
+    } else {
+      span.className = 'hero-letter';
+      span.textContent = ch;
+    }
+    container.appendChild(span);
+  }
+
+  // ── 2. Constants ───────────────────────────────────────────────────────
+  var letters      = Array.from(container.querySelectorAll('.hero-letter'));
+  var REPEL_RADIUS   = 90;   // px — repulsion starts here
+  var REPEL_STRENGTH = 42;   // slightly higher max displacement
+  var SPRING         = 0.09; // lower tension → slower, more luxurious return
+  var DAMPING        = 0.82; // higher damping → less bounce, more liquid
+  var CIRCLE_SPRING  = 0.028;
+  var CIRCLE_DAMPING = 0.88;
+  var CIRCLE_MAX     = 60;   // max circle drift in px
+  var CIRCLE_REPEL   = 140;  // px — inside this radius, circle pushes away instead
+
+  // ── 3. Per-letter physics state ────────────────────────────────────────
+  var state = letters.map(function() {
+    return { vx: 0, vy: 0, cx: 0, cy: 0 };
+  });
+
+  // ── 4. Cached letter centre positions (viewport-relative at rest) ───────
+  // These are read once and only re-read on resize — no per-frame getBCR calls.
+  var letterOrigins = []; // { x, y } in viewport coords at the time of caching
+
+  function cacheLetterPositions() {
+    // Temporarily zero all transforms so we measure true resting positions
+    letters.forEach(function(l) { l.style.transform = 'none'; });
+    // Single forced layout read — all rects in one batch
+    letterOrigins = letters.map(function(l) {
+      var r = l.getBoundingClientRect();
+      return {
+        x: r.left + r.width  / 2,
+        y: r.top  + r.height / 2
+      };
+    });
+    // Restore current offsets immediately after
+    letters.forEach(function(l, i) {
+      var s = state[i];
+      if (s.cx !== 0 || s.cy !== 0) {
+        l.style.transform = 'translate(' + s.cx.toFixed(2) + 'px,' + s.cy.toFixed(2) + 'px)';
+      }
+    });
+  }
+
+  // ── 5. Hero section rect (cached, updated on mousemove + resize) ───────
+  var heroSection = document.getElementById('heroSection');
+  var heroMidX = 0, heroMidY = 0;
+
+  function cacheHeroRect() {
+    if (!heroSection) return;
+    var r = heroSection.getBoundingClientRect();
+    heroMidX = r.left + r.width  / 2;
+    heroMidY = r.top  + r.height / 2;
+  }
+
+  // ── 6. Circle physics state ────────────────────────────────────────────
+  // RAF writes transform on #heroCircle; GSAP's yPercent lives on #heroCircleWrapper
+  var circle = document.getElementById('heroCircle');
+  var ccx = 0, ccy = 0, cvx = 0, cvy = 0;
+
+  // ── 8. Mouse coords ────────────────────────────────────────────────────
+  var mouseX = -9999, mouseY = -9999;
+
+  // ── 9. RAF animation loop — zero layout reads ──────────────────────────
+  function tick() {
+    requestAnimationFrame(tick);
+
+    // Letters — use cached origins; add current scroll offset so viewport coords stay valid
+    var scrollY = window.scrollY || 0;
+    letters.forEach(function(letter, i) {
+      var origin = letterOrigins[i];
+      if (!origin) return;
+      // Adjust cached viewport Y for current scroll position
+      var lx = origin.x;
+      var ly = origin.y - scrollY + heroScrollAtCache;
+      var dx = lx - mouseX;
+      var dy = ly - mouseY;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+
+      var targetX = 0, targetY = 0;
+      if (dist < REPEL_RADIUS && dist > 0) {
+        var force = (1 - dist / REPEL_RADIUS);
+        force = force * force; // quadratic falloff
+        targetX = (dx / dist) * force * REPEL_STRENGTH;
+        targetY = (dy / dist) * force * REPEL_STRENGTH;
+      }
+
+      var s = state[i];
+      var ax = (targetX - s.cx) * SPRING;
+      var ay = (targetY - s.cy) * SPRING;
+      s.vx = (s.vx + ax) * DAMPING;
+      s.vy = (s.vy + ay) * DAMPING;
+      s.cx += s.vx;
+      s.cy += s.vy;
+
+      letter.style.transform = 'translate(' + s.cx.toFixed(2) + 'px,' + s.cy.toFixed(2) + 'px)';
+    });
+
+    // Hero circle — lazy spring: attracts from far, repels when cursor is close
+    if (mouseX > -9999) {
+      var dcx = mouseX - heroMidX;
+      var dcy = mouseY - heroMidY;
+      var cdist = Math.sqrt(dcx * dcx + dcy * dcy);
+      var tox, toy;
+      if (cdist < CIRCLE_REPEL && cdist > 0) {
+        // Close range: push away — magnitude scales with proximity
+        var repelForce = (1 - cdist / CIRCLE_REPEL) * CIRCLE_MAX * 1.6;
+        tox = -(dcx / cdist) * repelForce;
+        toy = -(dcy / cdist) * repelForce;
+      } else {
+        // Far range: drift lazily toward cursor
+        tox = Math.max(-CIRCLE_MAX, Math.min(CIRCLE_MAX, dcx * 0.12));
+        toy = Math.max(-CIRCLE_MAX, Math.min(CIRCLE_MAX, dcy * 0.12));
+      }
+      cvx = (cvx + (tox - ccx) * CIRCLE_SPRING) * CIRCLE_DAMPING;
+      cvy = (cvy + (toy - ccy) * CIRCLE_SPRING) * CIRCLE_DAMPING;
+      ccx += cvx;
+      ccy += cvy;
+      circle.style.transform = 'translate(calc(-50% + ' + ccx.toFixed(2) + 'px), calc(-50% + ' + ccy.toFixed(2) + 'px))';
+    }
+  }
+
+  // ── 10. Event listeners ────────────────────────────────────────────────
+  document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  document.addEventListener('mouseleave', function() {
+    mouseX = -9999; mouseY = -9999;
+  });
+
+  // Recache on resize (debounced 150ms)
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      cacheLetterPositions();
+      cacheHeroRect();
+    }, 150);
+  });
+
+  // ── 11. Initialise after fonts + layout are ready ─────────────────────
+  // requestAnimationFrame defers until after the first paint so font metrics
+  // are applied and getBCR returns accurate values.
+  var heroScrollAtCache = 0;
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      heroScrollAtCache = window.scrollY || 0;
+      cacheLetterPositions();
+      cacheHeroRect();
+      tick();
+    });
+  });
+
+})();
+</script>
+
+<!-- ─── CINEMATIC PRELOADER SCRIPT (GSAP + Lenis) ─── -->
+<script>
+(function () {
+  // ── DOM refs ──────────────────────────────────────────────────────────────
+  var pre      = document.getElementById('preloader');
+  var countEl  = document.getElementById('preCount');
+  var barEl    = document.getElementById('preBar');
+  var curtain  = document.getElementById('preCurtain');
+  var wordmark = document.getElementById('preWordmark');
+  var pct      = document.getElementById('prePct');
+  var circle   = document.getElementById('preCircle');
+  var tagLine  = document.getElementById('preTagline');
+
+  // ── Build tagline character spans ─────────────────────────────────────────
+  var tagText = 'Video · Edit · Motion';
+  tagText.split('').forEach(function(ch) {
+    var s = document.createElement('span');
+    s.className = 'pre-tag-char';
+    s.textContent = ch === ' ' ? '\u00A0' : ch;
+    tagLine.appendChild(s);
+  });
+
+  // ── Counter state ─────────────────────────────────────────────────────────
+  var current = 0;
+  var target  = 0;
+  var done    = false;
+  var gsapReady = false;
+
+  // Non-linear stage simulation: fast → stall → burst to 100
+  var stages = [
+    { to: 30,  speed: 20 },
+    { to: 62,  speed: 8  },
+    { to: 88,  speed: 3  },
+    { to: 100, speed: 25 }
+  ];
+  var stageIdx = 0;
+
+  function advanceTarget() {
+    if (stageIdx >= stages.length) return;
+    var s = stages[stageIdx];
+    if (target < s.to) {
+      target = Math.min(s.to, target + 1);
+      setTimeout(advanceTarget, 1000 / s.speed);
+    } else {
+      stageIdx++;
+      setTimeout(advanceTarget, stageIdx < stages.length ? 130 : 0);
+    }
+  }
+
+  // ── RAF counter tick ──────────────────────────────────────────────────────
+  function tick() {
+    if (done) return;
+    current += (target - current) * 0.12;
+    if (Math.abs(target - current) < 0.4 && target >= 100) current = 100;
+
+    var display = Math.floor(current);
+    countEl.textContent = display;
+    barEl.style.width = display + '%';
+
+    if (current >= 99.8) {
+      done = true;
+      reveal();
+      return;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ── GSAP reveal sequence ──────────────────────────────────────────────────
+  function reveal() {
+    countEl.textContent = '100';
+    barEl.style.width = '100%';
+
+    // Wait for GSAP to be loaded (it's deferred)
+    function doReveal() {
+      if (typeof gsap === 'undefined') { setTimeout(doReveal, 50); return; }
+
+      var tl = gsap.timeline({
+        onComplete: function() {
+          pre.style.display = 'none';
+          document.body.classList.add('preloader-done');
+          // Notify other scripts
+          document.dispatchEvent(new CustomEvent('preloader-done'));
+        }
+      });
+
+      // 1. Counter + bar exit downward
+      tl.to([countEl, pct], {
+        y: 20,
+        opacity: 0,
+        duration: 0.4,
+        ease: 'power2.in',
+        stagger: 0.06
+      }, 0);
+
+      // 2. Bar track fades
+      tl.to(barEl.parentElement, {
+        opacity: 0,
+        duration: 0.3,
+        ease: 'power2.in'
+      }, 0.1);
+
+      // 3. Tagline chars stagger up
+      tl.to(tagLine.querySelectorAll('.pre-tag-char'), {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: 'power3.out',
+        stagger: 0.028
+      }, 0.2);
+
+      // 4. Wordmark fades in
+      tl.to(wordmark, {
+        opacity: 0.5,
+        duration: 0.4,
+        ease: 'power2.out'
+      }, 0.25);
+
+      // 5. Pause beat — let user read the tagline
+      tl.to({}, { duration: 0.5 });
+
+      // 6. Fade out entire preloader into hero
+      tl.to(pre, {
+        opacity: 0,
+        duration: 0.75,
+        ease: 'power2.inOut'
+      });
+    }
+
+    doReveal();
+  }
+
+  // ── Opening stagger entrance ──────────────────────────────────────────────
+  // Runs as soon as the DOM is ready, before GSAP. Uses RAF for 30ms stagger feel.
+  // We do a simple CSS approach: set initial states via JS, then transition in sequence.
+  function entrance() {
+    // Wordmark fades + rises up into center
+    setTimeout(function() {
+      wordmark.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      wordmark.style.opacity = '1';
+      wordmark.style.transform = 'translateY(0)';
+    }, 80);
+
+    // Counter fades in at bottom
+    setTimeout(function() {
+      countEl.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      countEl.style.opacity = '1';
+      countEl.style.transform = 'translateY(0)';
+    }, 220);
+
+    setTimeout(function() {
+      pct.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+      pct.style.opacity = '1';
+      pct.style.transform = 'translateY(0)';
+    }, 320);
+  }
+
+  // Set initial entrance states
+  wordmark.style.opacity = '0';
+  wordmark.style.transform = 'translateY(16px)';
+  countEl.style.opacity = '0';
+  countEl.style.transform = 'translateY(6px)';
+  pct.style.opacity = '0';
+  pct.style.transform = 'translateY(8px)';
+
+  entrance();
+  advanceTarget();
+  requestAnimationFrame(tick);
+
+  // Window load → burst to 100
+  window.addEventListener('load', function () { target = 100; });
+})();
+</script>
+
+<!-- ─── CUSTOM CURSOR REMOVED ─── -->
+
+<!-- ─── ANIMATED FILM GRAIN SCRIPT ─── -->
+<script>
+(function () {
+  var canvas = document.getElementById('film-grain');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var frame = 0;
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function drawGrain() {
+    requestAnimationFrame(drawGrain);
+    // Only redraw every 2 frames (30fps grain = more film-like than 60fps)
+    frame++;
+    if (frame % 2 !== 0) return;
+
+    var w = canvas.width, h = canvas.height;
+    var imageData = ctx.createImageData(w, h);
+    var data = imageData.data;
+
+    // Random offset each frame so it jitters — the "living" grain effect
+    for (var i = 0; i < data.length; i += 4) {
+      var v = (Math.random() * 255) | 0;
+      data[i]   = v;
+      data[i+1] = v;
+      data[i+2] = v;
+      data[i+3] = 255;
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }
+  drawGrain();
+})();
+</script>
+
+<!-- ─── MAGNETIC CTA SCRIPT REMOVED ─── -->
+
+<!-- ─── SMOOTH SCROLL + ANIMATION STACK ─── -->
+<!-- 1. Lenis (Smooth Scroll) -->
+<script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
+<!-- 2. GSAP Core -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<!-- 3. GSAP ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- 4. SplitType -->
+<script src="https://unpkg.com/split-type"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Register ScrollTrigger with GSAP
+  gsap.registerPlugin(ScrollTrigger);
+
+  // 1. Initialize Lenis
+  const lenis = new Lenis({
+    autoRaf: true,
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  });
+
+  // 2. Sync Lenis with GSAP ScrollTrigger
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  });
+  gsap.ticker.lagSmoothing(0);
+});
+</script>
+
+<!-- ─── ADVANCED ANIMATION EFFECTS ─── -->
+<!-- 1. Masked Line Reveal  2. Scroll-Fill Text  3. Velocity Skew
+     4. Parallax Thumbnails  5. Scale-on-Scroll Cards             -->
+<script>
+window.addEventListener('load', function () {
+  function initEffects() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || typeof SplitType === 'undefined') {
+      setTimeout(initEffects, 80);
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ══════════════════════════════════════════════════════════════
+       1. MASKED LINE REVEAL
+       Targets: .masked-line-reveal  (Highlights Reel heading)
+       SplitType wraps each line in overflow:hidden + slides it up.
+    ══════════════════════════════════════════════════════════════ */
+    document.querySelectorAll('.masked-line-reveal').forEach(function(el) {
+      var split = new SplitType(el, { types: 'lines' });
+      // Wrap each line in a mask container
+      split.lines.forEach(function(line) {
+        var wrapper = document.createElement('div');
+        wrapper.style.overflow = 'hidden';
+        wrapper.style.display = 'block';
+        line.parentNode.insertBefore(wrapper, line);
+        wrapper.appendChild(line);
+      });
+      gsap.from(split.lines, {
+        y: '110%',
+        opacity: 0,
+        duration: 1.1,
+        ease: 'power4.out',
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 88%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+
+    /* ══════════════════════════════════════════════════════════════
+       2. SCROLL-SCRUBBED FILL TEXT
+       Targets: .fill-text  (the "Complex ideas. Clear stories." quote)
+       Each word: ghost layer always visible, fill layer clipped to
+       reveal from 0→100% as the element scrolls through the viewport.
+    ══════════════════════════════════════════════════════════════ */
+    document.querySelectorAll('.fill-text').forEach(function(el) {
+      // Duplicate the element: one ghost (outline), one fill (solid)
+      var originalHTML = el.innerHTML;
+
+      // Ghost layer
+      var ghost = document.createElement(el.tagName.toLowerCase());
+      ghost.className = el.className + ' fill-text-ghost';
+      ghost.style.cssText = 'position:relative;margin:0;';
+      ghost.innerHTML = originalHTML;
+
+      // Fill layer (absolutely overlaid)
+      var fill = document.createElement(el.tagName.toLowerCase());
+      fill.className = el.className + ' fill-text-fill';
+      fill.innerHTML = originalHTML;
+
+      // Wrap them
+      var wrapper = document.createElement('div');
+      wrapper.style.cssText = 'position:relative;';
+      el.parentNode.insertBefore(wrapper, el);
+      wrapper.appendChild(ghost);
+      wrapper.appendChild(fill);
+      el.parentNode.removeChild(el);
+
+      // Scrub the clipPath of the fill layer
+      gsap.fromTo(fill,
+        { clipPath: 'inset(0% 0% 100% 0%)' },
+        {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: wrapper,
+            start: 'top 75%',
+            end: 'bottom 35%',
+            scrub: 1.2
+          }
+        }
+      );
+    });
+
+    /* ══════════════════════════════════════════════════════════════
+       3. VELOCITY SKEW (GSAP-powered, smooth)
+       All .skew-target elements gently lean in the direction of
+       scroll momentum, snapping back at rest. Replaces the existing
+       RAF-based version with a proper GSAP ticker.
+    ══════════════════════════════════════════════════════════════ */
+    (function() {
+      var lastScrollY = window.scrollY;
+      var currentSkew = 0;
+      var MAX_SKEW = 5;
+      var LERP = 0.06;
+      var targets = document.querySelectorAll('.skew-target');
+      if (!targets.length) return;
+
+      gsap.ticker.add(function() {
+        var scrollY = window.scrollY;
+        var velocity = scrollY - lastScrollY;
+        lastScrollY = scrollY;
+        var targetSkew = Math.max(-MAX_SKEW, Math.min(MAX_SKEW, velocity * 0.04 * -1));
+        currentSkew += (targetSkew - currentSkew) * LERP;
+        targets.forEach(function(t) {
+          t.style.transform = 'skewY(' + currentSkew.toFixed(3) + 'deg)';
+        });
+      });
+    })();
+
+    /* ══════════════════════════════════════════════════════════════
+       4. PARALLAX THUMBNAILS
+       Horizontal card images: inner img moves at 0.35× page speed
+       creating a 3D "window" effect. Works on both horizontal reel
+       and the standard work-card-thumb grids.
+    ══════════════════════════════════════════════════════════════ */
+    document.querySelectorAll('.horizontal-card-img img, .work-card-thumb img').forEach(function(img) {
+      // Pre-scale so parallax travel never shows black edges
+      gsap.set(img, { scale: 1.15 });
+      gsap.fromTo(img,
+        { yPercent: -8 },
+        {
+          yPercent: 8,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: img.closest('.horizontal-card-img') || img.closest('.work-card-thumb'),
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true
+          }
+        }
+      );
+    });
+
+    /* ══════════════════════════════════════════════════════════════
+       5. SCALE-ON-SCROLL (Highlights Reel cards)
+       Each card starts at 90%, scales to 100% as it reaches
+       the dead-centre of the viewport.
+    ══════════════════════════════════════════════════════════════ */
+    document.querySelectorAll('.horizontal-card:not(.horiz-end-card)').forEach(function(card) {
+      gsap.fromTo(card,
+        { scale: 0.9, opacity: 0.6 },
+        {
+          scale: 1,
+          opacity: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: card,
+            start: 'left 90%',
+            end: 'left 40%',
+            scrub: 1,
+            // horizontal scroll container
+            containerAnimation: window._horizST || undefined
+          }
+        }
+      );
+    });
+
+    /* ══════════════════════════════════════════════════════════════
+       About scroll-block fade-ins (consolidated here, replaces old script)
+    ══════════════════════════════════════════════════════════════ */
+    document.querySelectorAll('.about-scroll-block').forEach(function (block) {
+      gsap.fromTo(block,
+        { opacity: 0, y: 48 },
+        {
+          opacity: 1, y: 0,
+          duration: 0.9,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: block,
+            start: 'top 82%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
+    });
+
+  }
+  initEffects();
+});
+</script>
+
+<!-- ─── DYNAMIC COLOR BLEND TRANSITIONS ─── -->
+<script>
+window.addEventListener('load', function () {
+  function initColorBlend() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+      setTimeout(initColorBlend, 80);
+      return;
+    }
+
+    function hexToRgb(hex) {
+      return [
+        parseInt(hex.slice(1,3), 16),
+        parseInt(hex.slice(3,5), 16),
+        parseInt(hex.slice(5,7), 16)
+      ];
+    }
+    function lerpColor(a, b, t) {
+      var ca = hexToRgb(a), cb = hexToRgb(b);
+      return 'rgb(' +
+        Math.round(ca[0] + (cb[0]-ca[0])*t) + ',' +
+        Math.round(ca[1] + (cb[1]-ca[1])*t) + ',' +
+        Math.round(ca[2] + (cb[2]-ca[2])*t) + ')';
+    }
+
+    // Cream → Ink: entering the Highlights Reel (dark section)
+    var hlSection = document.querySelector('#selected-works');
+    if (hlSection) {
+      ScrollTrigger.create({
+        trigger: hlSection,
+        start: 'top 65%',
+        end: 'top 0%',
+        scrub: 1.4,
+        onUpdate: function(self) {
+          document.body.style.backgroundColor = lerpColor('#F5F0E8', '#1A1A1A', self.progress);
+        }
+      });
+    }
+
+    // Ink → Red: entering the CTA band
+    var ctaBand = document.querySelector('.cta-band');
+    if (ctaBand) {
+      ScrollTrigger.create({
+        trigger: ctaBand,
+        start: 'top 80%',
+        end: 'top 15%',
+        scrub: 1.4,
+        onUpdate: function(self) {
+          document.body.style.backgroundColor = lerpColor('#1A1A1A', '#E8200A', self.progress);
+        }
+      });
+    }
+
+    // Red → Cream: entering the About section
+    var aboutSection = document.querySelector('#about');
+    if (aboutSection) {
+      ScrollTrigger.create({
+        trigger: aboutSection,
+        start: 'top 80%',
+        end: 'top 15%',
+        scrub: 1.4,
+        onUpdate: function(self) {
+          document.body.style.backgroundColor = lerpColor('#E8200A', '#F5F0E8', self.progress);
+        }
+      });
+    }
+  }
+  initColorBlend();
+});
+</script>
+
+<!-- ─── CLIP-PATH SECTION TITLE REVEALS ─── -->
+<script>
+window.addEventListener('load', function () {
+  // Wait for GSAP to be available (loaded via defer)
+  function initReveals() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+      setTimeout(initReveals, 80);
+      return;
+    }
+    document.querySelectorAll('.reveal-inner').forEach(function (el) {
+      gsap.to(el, {
+        clipPath: 'inset(0% 0% 0% 0%)',
+        duration: 1.1,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 88%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+  }
+  initReveals();
+});
+</script>
+<!-- ─── SCROLL PROGRESS BAR ─── -->
+<script>
+(function () {
+  var bar = document.getElementById('scroll-progress');
+  function updateBar() {
+    var scrollTop = window.scrollY || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    bar.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updateBar, { passive: true });
+  updateBar();
+})();
+</script>
+
+</body>
+</html>
